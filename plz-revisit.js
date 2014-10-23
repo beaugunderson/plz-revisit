@@ -61,7 +61,7 @@ utilities.populateServices(function (services) {
       return;
     }
 
-    // Discard mentions where there's no media
+    // Respond to mentions without media by glitching the text
     if (!tweet.entities || !tweet.entities.media) {
       processText(tweet);
 
