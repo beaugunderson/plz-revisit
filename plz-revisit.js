@@ -8,12 +8,34 @@ var _ = require('lodash');
 _.mixin(Twit.prototype, botUtilities.twitMixins);
 
 var SCREEN_NAME = process.env.SCREEN_NAME;
+var RE_LEADING_SCREEN_NAME = new RegExp('\\s*.?\\s*' + SCREEN_NAME, 'i');
 
 var T = new Twit(botUtilities.getTwitterAuthFromEnv());
 
 var stream = T.stream('user');
 
 utilities.populateServices(function (services) {
+  function processText(tweet) {
+    var text = tweet.text.replace(RE_LEADING_SCREEN_NAME, '').trim();
+
+    utilities.revisitText(services, text, function (err, revisitedBuffer) {
+      if (err || !revisitedBuffer) {
+        return console.log('revisitText error:', err);
+      }
+
+      var tweetText = botUtilities.heyYou(tweet.user.screen_name);
+
+      T.updateWithMedia(tweetText, tweet.id_str, revisitedBuffer,
+          function (err, response, body) {
+        if (err || response.statusCode !== 200) {
+          return console.log('TUWM error', err, body);
+        }
+
+        console.log('TUWM status', err, response.statusCode);
+      });
+    });
+  }
+
   function processMedia(tweet, media) {
     utilities.revisitUrl(services, media.media_url, function (err, result) {
       if (err || !result) {
@@ -41,6 +63,8 @@ utilities.populateServices(function (services) {
 
     // Discard mentions where there's no media
     if (!tweet.entities || !tweet.entities.media) {
+      processText(tweet);
+
       return;
     }
 
