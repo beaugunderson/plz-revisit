@@ -23,9 +23,9 @@ utilities.populateServices(function (services) {
       var tweetText = botUtilities.heyYou(tweet.user.screen_name);
 
       T.updateWithMedia(tweetText, tweet.id_str, result,
-          function (err, response, body) {
+          function (err, data, response) {
         if (err || response.statusCode !== 200) {
-          return console.log('TUWM error', err, body);
+          return console.log('TUWM error', err, data, response);
         }
 
         console.log('TUWM status', err, response.statusCode);
