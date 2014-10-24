@@ -2,7 +2,6 @@
 
 var botUtilities = require('bot-utilities');
 var Twit = require('twit');
-var urlRegex = require('url-regex')();
 var utilities = require('./lib/utilities.js');
 var _ = require('lodash');
 
@@ -46,9 +45,9 @@ utilities.populateServices(function (services) {
       var tweetText = botUtilities.heyYou(tweet.user.screen_name);
 
       T.updateWithMedia(tweetText, tweet.id_str, result,
-          function (err, data, response) {
+          function (err, response, body) {
         if (err || response.statusCode !== 200) {
-          return console.log('TUWM error', err, data, response);
+          return console.log('TUWM error', err, body, response);
         }
 
         console.log('TUWM status', err, response.statusCode);
@@ -65,13 +64,8 @@ utilities.populateServices(function (services) {
     // Don't respond to retweets of our tweets
     if (tweet.retweeted_status &&
         tweet.retweeted_status.user.screen_name === SCREEN_NAME) {
-      return;
-    }
+      console.log('ignoring a retweet', tweet.id_str);
 
-    var textWithoutUrls = tweet.text.replace(urlRegex, '').trim();
-
-    // Don't respond to tweets of URLs
-    if (textWithoutUrls === '') {
       return;
     }
 
