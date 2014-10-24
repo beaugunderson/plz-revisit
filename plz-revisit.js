@@ -2,6 +2,7 @@
 
 var botUtilities = require('bot-utilities');
 var Twit = require('twit');
+var urlRegex = require('url-regex')();
 var utilities = require('./lib/utilities.js');
 var _ = require('lodash');
 
@@ -58,6 +59,19 @@ utilities.populateServices(function (services) {
   stream.on('tweet', function (tweet) {
     // Discard tweets where we're not mentioned
     if (!_.some(tweet.entities.user_mentions, {screen_name: SCREEN_NAME})) {
+      return;
+    }
+
+    // Don't respond to retweets of our tweets
+    if (tweet.retweeted_status &&
+        tweet.retweeted_status.user.screen_name === SCREEN_NAME) {
+      return;
+    }
+
+    var textWithoutUrls = tweet.text.replace(urlRegex, '').trim();
+
+    // Don't respond to tweets of URLs
+    if (textWithoutUrls === '') {
       return;
     }
 
