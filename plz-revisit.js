@@ -14,7 +14,9 @@ var T = new Twit(botUtilities.getTwitterAuthFromEnv());
 
 var stream = T.stream('user');
 
-utilities.populateServices(function (services) {
+utilities.populateServices(function (groupedServices) {
+  var services = groupedServices.safe;
+
   function processText(tweet) {
     var text = tweet.text.replace(RE_LEADING_SCREEN_NAME, '').trim();
 
