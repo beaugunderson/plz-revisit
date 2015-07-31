@@ -25,7 +25,7 @@ utilities.populateServices(function (groupedServices) {
         return console.log('revisitText error:', err);
       }
 
-      var tweetText = botUtilities.heyYou(tweet.user.screen_name);
+      var tweetText = tweet.user.screen_name + ' ' + botUtilities.heyYou();
 
       T.updateWithMedia(tweetText, tweet.id_str, revisitedBuffer,
           function (err, response, body) {
@@ -44,7 +44,7 @@ utilities.populateServices(function (groupedServices) {
         return console.log('Error:', err);
       }
 
-      var tweetText = botUtilities.heyYou(tweet.user.screen_name);
+      var tweetText = tweet.user.screen_name + ' ' + botUtilities.heyYou();
 
       T.updateWithMedia(tweetText, tweet.id_str, result,
           function (err, response, body) {
